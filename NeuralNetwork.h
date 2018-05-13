@@ -235,19 +235,16 @@ Matrix & Matrix::operator+(Matrix other)
 {
 
 	Matrix * final = new Matrix(rows, cols);
-	if (other.cols == 1) {
-		float * row;
-		for (int curr_row = 0; curr_row < rows; curr_row++)
+	float * row;
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		row = weights[curr_row];
+		for (int curr_col = 0; curr_col < cols; curr_col++)
 		{
-			row = weights[curr_row];
-			for (int curr_col = 0; curr_col < cols; curr_col++)
-			{
-				(*final)(curr_row, curr_col) = row[curr_col] + other(curr_row, curr_col);
-			}
+			(*final)(curr_row, curr_col) = row[curr_col] + other(curr_row, curr_col);
 		}
-	} else {
-		cout << "THERE IS AN ERROR\n";
 	}
+
 
 	return (*final);
 }
@@ -272,19 +269,17 @@ Matrix & Matrix::operator-(Matrix other)
 {
 
 	Matrix * final = new Matrix(rows, cols);
-	if (other.cols == 1) {
-		float * row;
-		for (int curr_row = 0; curr_row < rows; curr_row++)
+
+	float * row;
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		row = weights[curr_row];
+		for (int curr_col = 0; curr_col < cols; curr_col++)
 		{
-			row = weights[curr_row];
-			for (int curr_col = 0; curr_col < cols; curr_col++)
-			{
-				(*final)(curr_row, curr_col) = row[curr_col] - other(curr_row, curr_col);
-			}
+			(*final)(curr_row, curr_col) = row[curr_col] - other(curr_row, curr_col);
 		}
-	} else {
-		cout << "THERE IS AN ERROR\n";
 	}
+
 
 	return (*final);
 }

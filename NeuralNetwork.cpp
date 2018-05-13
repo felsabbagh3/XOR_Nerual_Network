@@ -82,8 +82,8 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 	Matrix weights_ho_deltas = output_gradients * hidden_t;
 
 	// Changing HO layer weights
-	weights_ho = weights_ho + weights_ho_deltas;
-
+	(*weights_ho) = (*weights_ho) + weights_ho_deltas;
+	(*bias_o)     = (*bias_o)     + output_gradients;
 	// Calculating Hidden Gradient
 	Matrix hidden_gradient = hidden;
 	hidden_gradient.map(dsigmoid);
@@ -96,20 +96,21 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 	Matrix weights_ih_deltas = hidden_gradient * input_t;
 
 	// Changing IH layer weights
-	weights_ih = weights_ih + weights_ih_deltas;
-
+	(*weights_ih) = (*weights_ih) + weights_ih_deltas;
+	(*bias_h)     = (*bias_h)     + hidden_gradient;
 }
 
 int main()
 {
-	NeuralNetwork nn(2,2,1,0.1);
+	NeuralNetwork nn(2,2,2,0.1);
 
 	Matrix input(2,1);
 	input(0,0) = 1;
 	input(1,0) = 0;
 
-	Matrix output(1,1);
+	Matrix output(2,1);
 	output(0,0) = 1;
+	output(1,0) = 0;
 
 	nn.train(input, output);
 
