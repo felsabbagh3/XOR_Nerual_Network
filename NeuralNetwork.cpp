@@ -72,19 +72,31 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 	Matrix hidden_errors  = who_tr * output_errors;
 
 	// Calculate Gradient
-	gradients = output;
-	gradients.map(dsigmoid);
-	gradients = gradients * output_errors;
-	gradients = gradients * lr;
+	Matrix output_gradients = output;
+	output_gradients.map(dsigmoid);
+	output_gradients = output_gradients * output_errors;
+	output_gradients = output_gradients * lr;
 
-	// Calculate Deltas
+	// Calculate HO Deltas
 	Matrix hidden_t          = hidden.transpose();
-	Matrix weights_ho_deltas = gradients * hidden_t;
+	Matrix weights_ho_deltas = output_gradients * hidden_t;
 
-	// Changing Layer weights
+	// Changing HO layer weights
 	weights_ho = weights_ho + weights_ho_deltas;
 
+	// Calculating Hidden Gradient
+	Matrix hidden_gradient = hidden;
+	hidden_gradient.map(dsigmoid);
+	hidden_gradient = hidden_gradient * hidden_errors;
+	hidden_gradient = hidden_gradient * lr;
 
+
+	// Calculating IH deltas
+	Matrix input_t           = input.transpose();
+	Matrix weights_ih_deltas = hidden_gradient * input_t;
+
+	// Changing IH layer weights
+	weights_ih = weights_ih + weights_ih_deltas;
 
 }
 
