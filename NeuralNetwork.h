@@ -17,15 +17,18 @@ class Matrix
 		Matrix(int,int);
 		Matrix(int,int, float *);
 		Matrix(Matrix &);
+		Matrix(const Matrix &);
 		~Matrix();
 		float & operator()(int, int) const;
 		Matrix & operator=(Matrix &);
 		Matrix & operator=(const Matrix &);
 		Matrix & operator*(Matrix &);
-		Matrix & operator+(int);
+		Matrix & operator*(float);
+		Matrix & operator+(float);
 		Matrix & operator+(Matrix);
-		Matrix & operator-(int);
+		Matrix & operator-(float);
 		Matrix & operator-(Matrix);
+		Matrix & transpose();
 		void randomize();
 		void map( float (*f)(float) );
 		int rows;
@@ -89,6 +92,22 @@ Matrix::Matrix(int rows_, int cols_, float * arr)
 
 // Copy constructor
 Matrix::Matrix(Matrix & other) {
+	rows = other.rows;
+	cols = other.cols;
+	weights = new float*[rows];
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		weights[curr_row] = new float[cols];
+		for (int curr_col = 0; curr_col < cols; curr_col++)
+		{
+			weights[curr_row][curr_col] = other(curr_row, curr_col);
+		}
+	}
+	srand(time(0));
+}
+
+// Copy constructor
+Matrix::Matrix(const Matrix & other) {
 	rows = other.rows;
 	cols = other.cols;
 	weights = new float*[rows];
@@ -181,11 +200,9 @@ void Matrix::randomize()
 		row = weights[curr_row];
 		for (int curr_col = 0; curr_col < cols; curr_col++)
 		{
-
 			r = ( (float) ((rand()) % 100) / 100);
 			r = (r * 2) - 1;
 			row[curr_col] = r;
-			cout << r << endl;
 		}
 	}
 }
@@ -198,7 +215,7 @@ float & Matrix::operator()(int y, int x) const{
 	}
 }
 
-Matrix & Matrix::operator+(int num)
+Matrix & Matrix::operator+(float num)
 {
 	Matrix * final = new Matrix(rows, cols);
 	float * row;
@@ -235,7 +252,7 @@ Matrix & Matrix::operator+(Matrix other)
 	return (*final);
 }
 
-Matrix & Matrix::operator-(int num)
+Matrix & Matrix::operator-(float num)
 {
 	Matrix * final = new Matrix(rows, cols);
 	float * row;
@@ -251,26 +268,67 @@ Matrix & Matrix::operator-(int num)
 	return (*final);
 }
 
+Matrix & Matrix::operator-(Matrix other)
+{
+
+	Matrix * final = new Matrix(rows, cols);
+	if (other.cols == 1) {
+		float * row;
+		for (int curr_row = 0; curr_row < rows; curr_row++)
+		{
+			row = weights[curr_row];
+			for (int curr_col = 0; curr_col < cols; curr_col++)
+			{
+				(*final)(curr_row, curr_col) = row[curr_col] - other(curr_row, curr_col);
+			}
+		}
+	} else {
+		cout << "THERE IS AN ERROR\n";
+	}
+
+	return (*final);
+}
+
 Matrix & Matrix::operator*(Matrix & other)
 {
-	Matrix * final = new Matrix(rows, 1);
-	if (other.cols == 1)
+	Matrix * final = new Matrix(rows, other.cols);
+
+	float * row;
+	float sum;
+	for (int i = 0; i < other.cols; i++)
 	{
-		float * row;
-		float sum;
 		for (int curr_row = 0; curr_row < rows; curr_row++)
 		{
 			row = weights[curr_row];
 			sum = 0;
 			for (int curr_col = 0; curr_col < cols; curr_col++)
 			{
-				sum += row[curr_col] * other(curr_col, 0);
+				sum += row[curr_col] * other(curr_col, i);
 			}
-			(*final)(curr_row, 0) = sum;
+			(*final)(curr_row, i) = sum;
 		}
-	} else {
-		cout << "THERE IS AN ERROR";
 	}
+
+	return (*final);
+}
+
+Matrix & Matrix::operator*(float num)
+{
+	Matrix * final = new Matrix(rows, 1);
+
+	float * row;
+	float sum;
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		row = weights[curr_row];
+		sum = 0;
+		for (int curr_col = 0; curr_col < cols; curr_col++)
+		{
+			sum += row[curr_col] * num;
+		}
+		(*final)(curr_row, 0) = sum;
+	}
+
 
 	return (*final);
 }
@@ -286,6 +344,21 @@ void Matrix::map(float (*f)(float))
 			row[curr_col] = f(row[curr_col]);
 		}
 	}
+}
+
+Matrix & Matrix::transpose()
+{
+	Matrix * final = new Matrix(cols, rows);
+	float * row;
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		row = weights[curr_row];
+		for (int curr_col = 0; curr_col < cols; curr_col++)
+		{
+			(*final)(curr_col, curr_row) = row[curr_col];
+		}
+	}
+	return (*final);
 }
 
 // // Overloading the output stream operator << 
@@ -333,17 +406,18 @@ void Matrix::map(float (*f)(float))
 class NeuralNetwork
 {
 	public:
-		NeuralNetwork(int,int,int);
+		NeuralNetwork(int,int,int,float);
 		~NeuralNetwork();
 		Matrix feedforward(Matrix &);
 		int input_nodes;
 		int hidden_nodes;
 		int output_nodes;
+		float lr;
 		Matrix * weights_ih;
 		Matrix * weights_ho;
 		Matrix * bias_h;
 		Matrix * bias_o;
-		void train(Matrix, float);
+		void train(Matrix &, Matrix &);
 };
 
 
@@ -352,6 +426,10 @@ float sigmoid(float x)
 	return (1 / (1 + exp(-x)));
 }
 
+float dsigmoid(float y)
+{
+	return y * (1 - y);
+}
 
 
 
