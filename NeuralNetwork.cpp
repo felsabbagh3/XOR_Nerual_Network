@@ -103,7 +103,7 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 int main()
 {
 	srand(time(0));
-	NeuralNetwork nn(2,2,1,0.1);
+	NeuralNetwork nn(2,20,1,0.1);
 
 	Matrix * inputs = new Matrix[4];
 	inputs[0](0,0) = 1;
@@ -140,6 +140,7 @@ int main()
 	{
 		r = rand() % 4;
 		nn.train(inputs[r], outputs[r]);
+		cout << ((((double) i) / 50000) * 100) << endl;
 	}
 
 
