@@ -102,17 +102,85 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 
 int main()
 {
-	NeuralNetwork nn(2,2,2,0.1);
+	srand(time(0));
+	NeuralNetwork nn(2,2,1,0.1);
 
-	Matrix input(2,1);
-	input(0,0) = 1;
-	input(1,0) = 0;
+	Matrix * inputs = new Matrix[4];
+	inputs[0](0,0) = 1;
+	inputs[0](1,0) = 0;
 
-	Matrix output(2,1);
-	output(0,0) = 1;
-	output(1,0) = 0;
+	inputs[1](0,0) = 0;
+	inputs[1](1,0) = 1;
 
-	nn.train(input, output);
+	inputs[2](0,0) = 0;
+	inputs[2](1,0) = 0;
+
+	inputs[3](0,0) = 1;
+	inputs[3](1,0) = 1;
+
+	Matrix * outputs = new Matrix[4];
+	// delete &(outputs[0]);
+	outputs[0] = new Matrix(1,1);
+	outputs[0](0,0) = 1;
+
+	// delete &(outputs[1]);
+	outputs[1] = new Matrix(1,1);
+	outputs[1](0,0) = 1;
+
+	// delete &(outputs[2]);
+	outputs[2] = new Matrix(1,1);
+	outputs[2](0,0) = 0;
+
+	// delete &(outputs[3]);
+	outputs[3] = new Matrix(1,1);
+	outputs[3](0,0) = 0;
+
+	int r;
+	for (int i = 0; i < 50000; i++)
+	{
+		r = rand() % 4;
+		nn.train(inputs[r], outputs[r]);
+	}
+
+
+
+	cout << "INPUTS:" << endl;
+	cout << inputs[0];
+	Matrix o = nn.feedforward(inputs[0]);
+	cout << "OUTPUT" << endl;
+	cout << o;
+	cout << "*****************" << endl;
+
+	cout << "INPUTS:" << endl;
+	cout << inputs[1];
+	o = nn.feedforward(inputs[1]);
+	cout << "OUTPUT" << endl;
+	cout << o;
+	cout << "*****************" << endl;
+
+	cout << "INPUTS:" << endl;
+	cout << inputs[2];
+	o = nn.feedforward(inputs[2]);
+	cout << "OUTPUT" << endl;
+	cout << o;
+	cout << "*****************" << endl;
+
+	cout << "INPUTS:" << endl;
+	cout << inputs[3];
+	o = nn.feedforward(inputs[3]);
+	cout << "OUTPUT" << endl;
+	cout << o;
+	cout << "*****************" << endl;
+
+	// Matrix input(2,1);
+	// input(0,0) = 1;
+	// input(1,0) = 0;
+
+	// Matrix output(2,1);
+	// output(0,0) = 1;
+	// output(1,0) = 0;
+
+	// nn.train(input, output);
 
 }
 

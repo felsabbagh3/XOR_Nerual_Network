@@ -22,6 +22,8 @@ class Matrix
 		float & operator()(int, int) const;
 		Matrix & operator=(Matrix &);
 		Matrix & operator=(const Matrix &);
+		Matrix & operator=(Matrix *);
+		Matrix & operator=(const Matrix *);
 		Matrix & operator*(Matrix &);
 		Matrix & operator*(float);
 		Matrix & operator+(float);
@@ -53,9 +55,18 @@ ostream & operator<<(ostream & out, Matrix & cm) {
 
 Matrix::Matrix()
 {
-	rows    = 0;
-	cols    = 0;
-	weights = NULL;
+	rows    = 2;
+	cols    = 1;
+	weights = new float*[rows];
+	for (int curr_row = 0; curr_row < rows; curr_row++)
+	{
+		weights[curr_row] = new float[cols];
+		for (int curr_col = 0; curr_col < cols; curr_col++)
+		{
+			weights[curr_row][curr_col] = 0;
+		}
+	}
+	this->randomize();
 }
 
 Matrix::Matrix(int rows_, int cols_)
@@ -71,7 +82,6 @@ Matrix::Matrix(int rows_, int cols_)
 			weights[curr_row][curr_col] = 0;
 		}
 	}
-	srand(time(0));
 }
 
 Matrix::Matrix(int rows_, int cols_, float * arr)
@@ -87,7 +97,6 @@ Matrix::Matrix(int rows_, int cols_, float * arr)
 			weights[curr_row][curr_col] = arr[curr_row];
 		}
 	}
-	srand(time(0));
 }
 
 // Copy constructor
@@ -103,7 +112,6 @@ Matrix::Matrix(Matrix & other) {
 			weights[curr_row][curr_col] = other(curr_row, curr_col);
 		}
 	}
-	srand(time(0));
 }
 
 // Copy constructor
@@ -119,7 +127,6 @@ Matrix::Matrix(const Matrix & other) {
 			weights[curr_row][curr_col] = other(curr_row, curr_col);
 		}
 	}
-	srand(time(0));
 }
 
 Matrix & Matrix::operator=(Matrix & other) {
@@ -155,6 +162,72 @@ Matrix & Matrix::operator=(Matrix & other) {
 }
 
 Matrix & Matrix::operator=(const Matrix & other) {
+	if (&other != this) {
+		if (( rows != other.rows) && (cols != other.cols)) {
+			if (weights != NULL) {
+				delete [] weights;
+			}
+			rows = other.rows;
+			cols = other.cols;
+			weights = new float*[rows];
+			for (int curr_row = 0; curr_row < rows; curr_row++)
+			{
+				weights[curr_row] = new float[cols];
+				for (int curr_col = 0; curr_col < cols; curr_col++)
+				{
+					weights[curr_row][curr_col] = 1;
+				}
+			}
+        }
+        float * row;
+		for (int curr_row = 0; curr_row < rows; curr_row++)
+		{
+			row = weights[curr_row];
+			for (int curr_col = 0; curr_col < cols; curr_col++)
+			{
+				row[curr_col] = other(curr_row,curr_col);
+			}
+		}
+    }
+	return (*this);
+
+}
+
+Matrix & Matrix::operator=(Matrix * otherr) {
+	Matrix other = *otherr;
+	if (&other != this) {
+		if (( rows != other.rows) && (cols != other.cols)) {
+			if (weights != NULL) {
+				delete [] weights;
+			}
+			rows = other.rows;
+			cols = other.cols;
+			weights = new float*[rows];
+			for (int curr_row = 0; curr_row < rows; curr_row++)
+			{
+				weights[curr_row] = new float[cols];
+				for (int curr_col = 0; curr_col < cols; curr_col++)
+				{
+					weights[curr_row][curr_col] = 1;
+				}
+			}
+        }
+        float * row;
+		for (int curr_row = 0; curr_row < rows; curr_row++)
+		{
+			row = weights[curr_row];
+			for (int curr_col = 0; curr_col < cols; curr_col++)
+			{
+				row[curr_col] = other(curr_row,curr_col);
+			}
+		}
+    }
+	return (*this);
+
+}
+
+Matrix & Matrix::operator=(const Matrix * otherr) {
+	Matrix other = * otherr;
 	if (&other != this) {
 		if (( rows != other.rows) && (cols != other.cols)) {
 			if (weights != NULL) {
