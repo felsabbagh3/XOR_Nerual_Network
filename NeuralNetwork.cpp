@@ -68,7 +68,7 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 
 
 	// Calculating the error at each layer
-	Matrix output_errors  = target - output;
+	Matrix output_errors  = (target - output);
 	Matrix hidden_errors  = who_tr * output_errors;
 
 	// Calculate Gradient
@@ -103,7 +103,8 @@ void NeuralNetwork::train(Matrix & input, Matrix & target)
 int main()
 {
 	srand(time(0));
-	NeuralNetwork nn(2,100,1,0.1);
+	NeuralNetwork nn(2,10,1,0.1);
+	int num_iterations = 50000;
 
 	Matrix * inputs = new Matrix[4];
 	inputs[0](0,0) = 1;
@@ -136,11 +137,11 @@ int main()
 	outputs[3](0,0) = 0;
 
 	int r;
-	for (int i = 0; i < 50000; i++)
+	for (int i = 0; i < num_iterations; i++)
 	{
 		r = rand() % 4;
 		nn.train(inputs[r], outputs[r]);
-		cout << ((((double) i) / 50000) * 100) << endl;
+		cout << ((((double) i) / num_iterations) * 100) << endl;
 	}
 
 
